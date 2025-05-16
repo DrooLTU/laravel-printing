@@ -136,7 +136,7 @@ class PrintTask extends BasePrintTask
 
     public function send(array|null|RequestOptions $opts = null): PrintJobContract
     {
-        $this->ensureValidJob();
+        // $this->ensureValidJob();
 
         $this->pendingJob
             ->setPrinter($this->printerId)

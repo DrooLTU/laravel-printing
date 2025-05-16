@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace Rawilk\Printing\Api\Cups;
 
@@ -9,6 +9,7 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Rawilk\Printing\Api\Cups\Exceptions\CupsRequestFailed;
 use Rawilk\Printing\Api\Cups\Exceptions\InvalidRequest;
+use Rawilk\Printing\Api\Cups\PendingRequest as PendingRequest;
 use Rawilk\Printing\Api\Cups\Util\RequestOptions;
 use SensitiveParameter;
 
@@ -29,7 +30,7 @@ class CupsRequestor
     }
 
     public function request(
-        string|PendingRequest $binary,
+        string | PendingRequest $binary,
         RequestOptions $opts,
     ): CupsResponse {
         if ($binary instanceof PendingRequest) {
@@ -40,11 +41,11 @@ class CupsRequestor
 
         $client = $this->httpClient()
             ->withHeaders($opts->headers)
-            ->withBody($binary, self::CONTENT_TYPE)
-            ->when(
-                filled($username) || filled($password),
-                fn (PendingRequest $request) => $request->withBasicAuth($username ?? '', $password ?? ''),
-            );
+            ->withBody($binary, self::CONTENT_TYPE);
+
+        if (filled($username) || filled($password)) {
+            $client = $client->withBasicAuth($username ?? '', $password ?? '');
+        }
 
         $response = $client->post($adminUrl)->throwIfClientError();
 
@@ -90,8 +91,8 @@ class CupsRequestor
     private function getAdminUrl(): string
     {
         $scheme = $this->getScheme();
-        $ip = $this->getIp();
-        $port = $this->getPort();
+        $ip     = $this->getIp();
+        $port   = $this->getPort();
 
         return "{$scheme}://{$ip}:{$port}/admin";
     }
