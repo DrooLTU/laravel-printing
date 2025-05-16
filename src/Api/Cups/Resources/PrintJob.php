@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types = 1);
 
 namespace Rawilk\Printing\Api\Cups\Resources;
 
@@ -41,6 +41,9 @@ class PrintJob extends CupsObject
 
     public function printerName(): ?string
     {
+        if (empty($this->jobPrinterUri)) {
+            return null;
+        }
         // Attempt to extract the printer's name from the uri.
         if (preg_match('/printers\/(.*)$/', $this->jobPrinterUri, $matches)) {
             return $matches[1];
@@ -51,10 +54,10 @@ class PrintJob extends CupsObject
 
     protected function mutateAttributes(array $values): array
     {
-        $values['job-uri'] = $this->attributeValue($values, 'job-uri');
-        $values['job-name'] = $this->attributeValue($values, 'job-name');
+        $values['job-uri']         = $this->attributeValue($values, 'job-uri');
+        $values['job-name']        = $this->attributeValue($values, 'job-name');
         $values['job-printer-uri'] = $this->attributeValue($values, 'job-printer-uri');
-        $values['job-state'] = $this->attributeValue($values, 'job-state', JobState::Pending->value);
+        $values['job-state']       = $this->attributeValue($values, 'job-state', JobState::Pending->value);
 
         return $values;
     }
